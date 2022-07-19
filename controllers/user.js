@@ -16,14 +16,14 @@ async function userGet(req, res) {
 async function userCreate(req, res) {
 
     try {
-        if(!req.body.password){
+        if (!req.body.password) {
             return res.json("No Password");
         }
-        if(req.role !== "manager"){
+        if (req.role !== "manager") {
             return res.json("Unauthorized");
         }
-        const {token, salt, hash} = encryptPassword(req.body.password);
-        
+        const { token, salt, hash } = encryptPassword(req.body.password);
+
         const User = req.app.get("models").User;
 
         const NewUser = await new User({
@@ -48,6 +48,8 @@ async function userUpdate(req, res) {
         if (!req.body._id || !req.body.toModify) {
             return res.json("_id ou champs manquants");
         }
+        if (req.role !== "manager") {
+        }
         const User = req.app.get("models").User;
         const ToModifyUser = await User.findById(req.body._id)
         const toModifyKeys = Object.keys(req.body.toModify);
@@ -68,6 +70,8 @@ async function userDelete(req, res) {
         if (!req.body._id) {
             return res.json("_id manquant");
         }
+        if (req.role !== "manager") {
+        }
         const User = req.app.get("models").User;
         const ToDeleteUser = await User.findById(req.body._id)
         await ToDeleteUser.remove();
@@ -86,7 +90,7 @@ async function userLogin(req, res) {
         }
         const User = req.app.get("models").User;
         const toVerifyUser = await User.findById(req.body._id)
-        if(!toVerifyUser){
+        if (!toVerifyUser) {
             return "No user found";
         }
         res.json(decryptPassword(toVerifyUser, req.body.password));
